@@ -1,7 +1,7 @@
 FROM igorbarinov/openresty-nginx-module-vts
 
 # =============================================
-# 1. Network Optimization
+# 1. Network Optimization (BBR + TCP Tuning)
 # =============================================
 RUN echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf && \
     echo "net.core.netdev_max_backlog = 5000" >> /etc/sysctl.conf && \
@@ -11,7 +11,9 @@ RUN echo "net.core.somaxconn = 1024" >> /etc/sysctl.conf && \
     echo "net.ipv4.tcp_fin_timeout = 30" >> /etc/sysctl.conf && \
     echo "net.ipv4.tcp_keepalive_time = 300" >> /etc/sysctl.conf && \
     echo "net.ipv4.tcp_keepalive_intvl = 60" >> /etc/sysctl.conf && \
-    echo "net.ipv4.tcp_keepalive_probes = 5" >> /etc/sysctl.conf
+    echo "net.ipv4.tcp_keepalive_probes = 5" >> /etc/sysctl.conf && \
+    echo "net.core.default_qdisc = fq" >> /etc/sysctl.conf && \
+    echo "net.ipv4.tcp_congestion_control = bbr" >> /etc/sysctl.conf
 
 # =============================================
 # 2. Install Xray
