@@ -1,67 +1,88 @@
+# index.html ကိုပြင်ပါ
+cat > index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My CDN Website</title>
+    <title>Domain Fronting Proxy</title>
     <style>
-        /* ... ဆရာ့ CSS ... */
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f0c29;
+            color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background: #302b63;
+            color: white;
+        }
+        button {
+            background: #f5576c;
+            color: white;
+            cursor: pointer;
+        }
+        #output {
+            background: #24243e;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .status {
+            color: #00ff88;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🚀</div>
-        <h1>My CDN Website</h1>
-        <p>Data Package Example</p>
-        
-        <div id="data-container">
-            <h2>Data from JSON</h2>
-            <div id="data-display"></div>
-        </div>
-        
-        <div class="status">● ONLINE</div>
-        <div class="info-box">
-            <p><span>📌 Server:</span> CDN Domain</p>
-            <p><span>🔌 Port:</span> 10001</p>
-            <p><span>📁 Version:</span> v2.0.0</p>
-            <p><span>🕐 Status:</span> Running</p>
-        </div>
-        <div class="footer">
-            © 2026 My CDN Website. All rights reserved.
-        </div>
+        <h1>🚀 Domain Fronting Proxy</h1>
+        <p>Status: <span class="status">● ONLINE</span></p>
+        <input type="text" id="url-input" placeholder="Enter URL (e.g., https://ifconfig.me)">
+        <button onclick="loadURL()">Go</button>
+        <div id="output">Ready...</div>
     </div>
 
     <script>
-        // Load Data from JSON file
-        fetch('/data/data.json')
-            .then(response => response.json())
-            .then(data => {
-                const container = document.getElementById('data-display');
-                container.innerHTML = `
-                    <p><strong>Name:</strong> ${data.name}</p>
-                    <p><strong>Version:</strong> ${data.version}</p>
-                    <hr>
-                    <h3>Items:</h3>
-                    <ul>
-                        ${data.items.map(item => 
-                            `<li>${item.name} - $${item.price}</li>`
-                        ).join('')}
-                    </ul>
-                `;
-            })
-            .catch(error => {
-                console.error('Error loading data:', error);
-                document.getElementById('data-display').innerHTML = 
-                    '<p>Error loading data</p>';
-            });
-
-        // Load Data from API (Optional)
-        fetch('/api/data')
-            .then(response => response.json())
-            .then(data => {
-                console.log('API Data:', data);
-            })
-            .catch(error => console.error('API Error:', error));
+        const WORKER_URL = "https://bufisp.zwin73832.workers.dev";
+        
+        async function proxyRequest(url) {
+            try {
+                const response = await fetch(WORKER_URL + "?url=" + encodeURIComponent(url));
+                const data = await response.text();
+                document.getElementById('output').innerHTML = data;
+            } catch (error) {
+                document.getElementById('output').innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        function loadURL() {
+            const url = document.getElementById('url-input').value;
+            if (url) {
+                document.getElementById('output').innerHTML = 'Loading...';
+                proxyRequest(url);
+            } else {
+                document.getElementById('output').innerHTML = 'Please enter a URL';
+            }
+        }
     </script>
 </body>
 </html>
+EOF
+
+# Commit & Push
+git add index.html
+git commit -m "Add: Domain Fronting Proxy with Cloudflare Worker"
+git push origin main
