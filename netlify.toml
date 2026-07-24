@@ -1,6 +1,6 @@
 [build]
   command = "echo 'No build required'"
-  publish = "."
+  publish = "/opt/build/repo"   # ← ဒီလိုပြောင်းပါ
 
 [[redirects]]
   from = "/*"
